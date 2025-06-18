@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1032786422793",
+    "project_id": "casaevent-3da6c",
+    "storage_bucket": "casaevent-3da6c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1032786422793:android:1e0d313a7eff21ca87dcd8",
+        "android_client_info": {
+          "package_name": "com.example.casablanca_activites"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1032786422793-fadi724a54c0kuj7lchnajof0fmgaiii.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCD12Mo7AiDMCOoiiiq7HkIIKwovc38tNE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1032786422793-fadi724a54c0kuj7lchnajof0fmgaiii.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
