@@ -280,7 +280,7 @@ class _HomeContentState extends State<HomeContent> {
               ),
               const SizedBox(height: 8),
               CategoryFilter(
-                categories: ['Tous', 'Musique', 'Atelier', 'Restaurants', 'Nightlife'],
+                categories: ['Tous', 'Activités', 'Événements', 'Restaurants'],
                 onCategorySelected: _onPopularCategorySelected,
                 selectedCategory: popularCategory,
               ),
@@ -378,7 +378,7 @@ class _HomeContentState extends State<HomeContent> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      child: const Text("Acheter maintenant"),
+                      child: const Text("Réserver maintenant"),
                     ),
                   )
                 ],

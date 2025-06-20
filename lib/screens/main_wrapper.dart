@@ -15,6 +15,7 @@ class MainWrapper extends StatefulWidget {
 class _MainWrapperState extends State<MainWrapper> {
   int currentIndex = 0;
 
+  // EVENTS LIST DYNAMIQUE
   List<Map<String, dynamic>> events = [
     {
       "title": "REMA World Tour",
@@ -31,6 +32,13 @@ class _MainWrapperState extends State<MainWrapper> {
         {"type": "VIP", "price": 500},
         {"type": "VVIP", "price": 1000},
       ],
+      "comments": [
+        {"user": "Alice", "text": "Super ambiance, j’ai adoré !"},
+        {"user": "Bob", "text": "Bonne organisation, à refaire."},
+        {"user": "Fatima", "text": "Artiste au top 👌"},
+      ],
+      "planImage": "assets/images/plan_salle.png",
+      "videoThumb": "assets/images/rema_video_thumb.jpg",
     },
     {
       "title": "Jazz Night Casablanca",
@@ -42,6 +50,11 @@ class _MainWrapperState extends State<MainWrapper> {
       "location": "Théâtre Mohammed VI",
       "description": "Soirée de jazz avec artistes locaux et internationaux.",
       "tickets": [],
+      "comments": [
+        {"user": "Youssef", "text": "Organisation au top, bon son !"},
+      ],
+      "planImage": "assets/images/plan_salle.png",
+      "videoThumb": "assets/images/rema_video_thumb.jpg",
     },
     {
       "title": "Atelier Cuisine Marocaine",
@@ -53,12 +66,21 @@ class _MainWrapperState extends State<MainWrapper> {
       "location": "Centre Culturel L’Uzine",
       "description": "Atelier pour découvrir les secrets de la cuisine traditionnelle.",
       "tickets": [],
+      "comments": [],
+      "planImage": "assets/images/plan_salle.png",
+      "videoThumb": "assets/images/rema_video_thumb.jpg",
     }
   ];
 
   void toggleFavorite(int index) {
     setState(() {
       events[index]['liked'] = !events[index]['liked'];
+    });
+  }
+
+  void updateEventComments(int eventIndex, List<Map<String, String>> comments) {
+    setState(() {
+      events[eventIndex]['comments'] = comments;
     });
   }
 
@@ -71,7 +93,18 @@ class _MainWrapperState extends State<MainWrapper> {
         events: events,
         toggleFavorite: toggleFavorite,
         goToDetails: (e) {
-          Navigator.pushNamed(context, '/details', arguments: e);
+          final index = events.indexOf(e);
+          Navigator.pushNamed(
+            context,
+            '/details',
+            arguments: {
+              ...e,
+              'eventIndex': index,
+              'updateComments': (List<Map<String, String>> newComments) {
+                updateEventComments(index, newComments);
+              }
+            },
+          );
         },
       ),
       const MapScreen(),
@@ -85,7 +118,7 @@ class _MainWrapperState extends State<MainWrapper> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: Color.fromARGB(255, 244, 111, 71),
+        selectedItemColor: const Color.fromARGB(255, 244, 111, 71),
         unselectedItemColor: Colors.grey,
         onTap: (index) {
           setState(() => currentIndex = index);

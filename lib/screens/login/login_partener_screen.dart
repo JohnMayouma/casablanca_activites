@@ -62,6 +62,7 @@ class _LoginPartnerScreenState extends State<LoginPartnerScreen> {
               const Divider(thickness: 2, color: Colors.red),
               const SizedBox(height: 24),
               TextField(
+              
                 controller: _emailController,
                 decoration: const InputDecoration(
                   labelText: 'Adresse email',
@@ -82,6 +83,18 @@ class _LoginPartnerScreenState extends State<LoginPartnerScreen> {
                     onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
                   ),
                   helperText: "Le mot de passe doit contenir au moins 8 caractères",
+                ),
+              ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/forgot_password_partner');
+                  },
+                  child: const Text(
+                    'Mot de passe oublié ?',
+                    style: TextStyle(color: Colors.blue),
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
@@ -116,9 +129,17 @@ class _LoginPartnerScreenState extends State<LoginPartnerScreen> {
                 ],
               ),
               const SizedBox(height: 12),
-              Center(child: _socialButton("Continuer avec Apple", Icons.apple, Colors.black)),
-              Center(child: _socialButton("Continuer avec Google", Icons.g_mobiledata, Colors.red)),
-              Center(child: _socialButton("Continuer avec Facebook", Icons.facebook, Colors.blue)),
+              Center(
+                child: OutlinedButton.icon(
+                  onPressed: () {},
+                  icon: Image.asset('assets/icons/google_logo.png', height: 24),
+                  label: const Text("Continuer avec Google", style: TextStyle(color: Color.fromARGB(221, 245, 74, 74))),
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Colors.grey),
+                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                  ),
+                ),
+              ),
               const SizedBox(height: 12),
               const Text(
                 "En vous inscrivant, vous acceptez les Termes et Conditions. Vos données seront traitées conformément à notre politique de confidentialité.",
@@ -135,17 +156,6 @@ class _LoginPartnerScreenState extends State<LoginPartnerScreen> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _socialButton(String label, IconData icon, Color iconColor) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: OutlinedButton.icon(
-        onPressed: () {},
-        icon: Icon(icon, color: iconColor),
-        label: Text(label, style: TextStyle(color: iconColor)),
       ),
     );
   }

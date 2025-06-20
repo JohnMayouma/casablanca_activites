@@ -11,6 +11,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
   late Map<String, dynamic> args;
   late List<Map<String, dynamic>> tickets;
   late Map<String, int> quantities;
+  late List<Map<String, String>> comments;
+  late Function(List<Map<String, String>>) updateComments;
+  int? eventIndex;
 
   @override
   void didChangeDependencies() {
@@ -19,6 +22,10 @@ class _DetailsScreenState extends State<DetailsScreen> {
 
     tickets = List<Map<String, dynamic>>.from(args['tickets'] ?? []);
     quantities = {for (var t in tickets) t['type']: 0};
+
+    comments = List<Map<String, String>>.from(args['comments'] ?? []);
+    eventIndex = args['eventIndex'];
+    updateComments = args['updateComments'] ?? (List<Map<String, String>> newComments) {};
   }
 
   void updateQuantity(String type, int change) {
@@ -29,6 +36,15 @@ class _DetailsScreenState extends State<DetailsScreen> {
     });
   }
 
+  void _addComment(String comment) {
+    setState(() {
+      comments.insert(0, {"user": "Vous", "text": comment});
+      if (updateComments != null && eventIndex != null) {
+        updateComments(comments);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final String title = args['title'];
@@ -36,12 +52,15 @@ class _DetailsScreenState extends State<DetailsScreen> {
     final String date = args['date'];
     final String location = args['location'];
     final String description = args['description'];
+    final String planImage = args['planImage'] ?? "assets/images/plan_salle.png";
+    final String videoThumb = args['videoThumb'] ?? "assets/images/rema_video_thumb.jpg";
 
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // ----- Partie EXISTANTE -----
             Stack(
               clipBehavior: Clip.none,
               children: [
@@ -51,7 +70,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
                   height: 250,
                   fit: BoxFit.cover,
                 ),
-                // BOUTON RETOUR EN HAUT À GAUCHE
                 Positioned(
                   top: MediaQuery.of(context).padding.top + 10,
                   left: 10,
@@ -60,7 +78,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
                     onPressed: () => Navigator.pop(context),
                   ),
                 ),
-                // Image en bas et titre
                 Positioned(
                   bottom: -40,
                   left: 20,
@@ -203,16 +220,143 @@ class _DetailsScreenState extends State<DetailsScreen> {
 
                         Navigator.pushNamed(
                           context,
-                          '/payment',
+                          '/book_event',
                           arguments: {
                             'title': title,
                             'selectedTickets': selectedTickets,
+                            'imageUrl': imageUrl,
+                            'date': date,
+                            'location': location,
+                            'description': description,
                           },
                         );
                       },
                       child: const Text("Acheter", style: TextStyle(fontSize: 16)),
                     ),
-                  )
+                  ),
+                  // ----- NOUVELLES SECTIONS -----
+                  const SizedBox(height: 32),
+                  // PLAN & LOCALISATION
+                  const Text("Plan de la salle et Localisation", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 14),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          height: 100,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.grey.shade300),
+                            image: DecorationImage(
+                              image: AssetImage(planImage),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Container(
+                          height: 100,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.grey.shade300),
+                            color: Colors.grey[200],
+                          ),
+                          child: const Center(child: Icon(Icons.map, size: 40, color: Colors.red)),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 32),
+                  // AVIS UTILISATEURS
+                  const Text("Votre avis ...", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 10),
+                  ListView.builder(
+                    itemCount: comments.length,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, idx) {
+                      final c = comments[idx];
+                      return ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: CircleAvatar(
+                          backgroundColor: Colors.red[100],
+                          child: Text(c['user']![0], style: const TextStyle(color: Colors.red)),
+                        ),
+                        title: Text(c['user']!, style: const TextStyle(fontWeight: FontWeight.bold)),
+                        subtitle: Text(c['text']!),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  // Bouton d'ajout d'avis
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      icon: const Icon(Icons.chat, color: Colors.red),
+                      label: const Text("Écrire un avis", style: TextStyle(color: Colors.red)),
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: Colors.red),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                      onPressed: () async {
+                        final result = await showDialog<String>(
+                          context: context,
+                          builder: (context) {
+                            String commentText = '';
+                            return AlertDialog(
+                              title: const Text("Votre avis"),
+                              content: TextField(
+                                autofocus: true,
+                                decoration: const InputDecoration(hintText: "Votre commentaire..."),
+                                onChanged: (val) => commentText = val,
+                              ),
+                              actions: [
+                                TextButton(onPressed: () => Navigator.pop(context), child: const Text("Annuler")),
+                                ElevatedButton(
+                                  onPressed: () => Navigator.pop(context, commentText),
+                                  child: const Text("Envoyer"),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                        if (result != null && result.trim().isNotEmpty) {
+                          _addComment(result);
+                        }
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Container(
+                    width: double.infinity,
+                    height: 160,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: Colors.black,
+                      image: DecorationImage(
+                        image: AssetImage(videoThumb),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    child: Align(
+                      alignment: Alignment.bottomLeft,
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        color: Colors.black.withOpacity(0.6),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.play_circle, color: Colors.white, size: 32),
+                            SizedBox(width: 10),
+                            Text("Vidéo promotionnelle", style: TextStyle(color: Colors.white, fontSize: 16)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 40),
                 ],
               ),
             ),

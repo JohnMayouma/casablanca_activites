@@ -11,7 +11,7 @@ class FavoritesScreen extends StatefulWidget {
 
 class _FavoritesScreenState extends State<FavoritesScreen> {
   List<Map<String, dynamic>> filteredEvents = [];
-  String selectedCategory = 'All';
+  String selectedCategory = 'Tous';
   String sortBy = 'Date';
   bool isGrid = false;
 
@@ -24,7 +24,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   void filterEvents(String category) {
     setState(() {
       selectedCategory = category;
-      if (category == 'All') {
+      if (category == 'Tous') {
         filteredEvents = List.from(widget.likedEvents);
       } else {
         filteredEvents = widget.likedEvents
@@ -58,7 +58,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text("Remove from Favorites?", style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text("Supprimer des favoris?", style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
             Row(
               children: [
@@ -78,7 +78,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                 Expanded(
                   child: OutlinedButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text("Cancel"),
+                    child: const Text("Annuler"),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -92,7 +92,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                       });
                       Navigator.pop(context);
                     },
-                    child: const Text("Yes, Remove"),
+                    child: const Text("Oui, supprimer"),
                   ),
                 ),
               ],
@@ -166,7 +166,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
               ),
               const SizedBox(width: 8),
               const Text(
-                'Favorites',
+                'Favoris',
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 22,
@@ -203,24 +203,32 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
               child: Row(
                 children: [
                   ChoiceChip(
-                    label: const Text('All'),
-                    selected: selectedCategory == 'All',
+                    label: const Text('Tous'),
+                    selected: selectedCategory == 'Tous',
                     selectedColor: Colors.orange.shade100,
-                    onSelected: (_) => filterEvents('All'),
+                    onSelected: (_) => filterEvents('Tous'),
                   ),
                   const SizedBox(width: 8),
                   ChoiceChip(
-                    label: const Text('Music'),
-                    selected: selectedCategory == 'Music',
+                    label: const Text('Activités'),
+                    selected: selectedCategory == 'Activités',
                     selectedColor: Colors.orange.shade100,
-                    onSelected: (_) => filterEvents('Music'),
+                    onSelected: (_) => filterEvents('Activités'),
+                  ),
+                  
+                  const SizedBox(width: 8),
+                  ChoiceChip(
+                    label: const Text('Evenements'),
+                    selected: selectedCategory == 'Evenements',
+                    selectedColor: Colors.orange.shade100,
+                    onSelected: (_) => filterEvents('Evenementsc'),
                   ),
                   const SizedBox(width: 8),
                   ChoiceChip(
-                    label: const Text('Workshop'),
-                    selected: selectedCategory == 'Workshop',
+                    label: const Text('Restaurants'),
+                    selected: selectedCategory == 'Restaurants',
                     selectedColor: Colors.orange.shade100,
-                    onSelected: (_) => filterEvents('Workshop'),
+                    onSelected: (_) => filterEvents('Restaurants'),
                   ),
                   const Spacer(),
                   DropdownButton<String>(

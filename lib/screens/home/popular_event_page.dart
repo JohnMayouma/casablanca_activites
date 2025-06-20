@@ -25,7 +25,7 @@ class _PopularEventsPageState extends State<PopularEventsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final categories = ['Tous', 'Musique', 'Atelier', 'Restaurants', 'Nightlife'];
+    final categories = ['Tous', 'Activités', 'Événements', 'Restaurants'];
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(

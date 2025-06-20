@@ -1,15 +1,22 @@
-  // signup_qr_verification.dart
 import 'package:flutter/material.dart';
 
 class SignupQrVerificationScreen extends StatelessWidget {
   const SignupQrVerificationScreen({super.key});
 
-  void _continue(BuildContext context) {
-    Navigator.pushNamed(context, '/signup_success');
-  }
-
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)?.settings.arguments as Map?;
+    final userType = (args != null && args['type'] == 'partner') ? 'partner' : 'user';
+    final isPartner = userType == 'partner';
+
+    void _continue() {
+      Navigator.pushNamed(
+        context,
+        '/signup_success',
+        arguments: {'type': userType},
+      );
+    }
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -19,8 +26,12 @@ class SignupQrVerificationScreen extends StatelessWidget {
               const SizedBox(height: 40),
               Image.asset('assets/icons/logo.png', height: 80),
               const SizedBox(height: 20),
-              const Text('Cas@Event | Verification QR Code',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              Text(
+                isPartner
+                    ? 'Cas@Event | Partenaire - Vérification QR Code'
+                    : 'Cas@Event | Verification QR Code',
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
               const Divider(thickness: 2, color: Colors.red),
               const SizedBox(height: 20),
               const Text("Un mail vous a été envoyé sur manal******@ynov.com"),
@@ -28,7 +39,7 @@ class SignupQrVerificationScreen extends StatelessWidget {
               Image.asset('assets/images/qrcode.png', height: 160),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () => _continue(context),
+                onPressed: _continue,
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                 child: const Text("Continuer"),
               ),
@@ -48,4 +59,3 @@ class SignupQrVerificationScreen extends StatelessWidget {
     );
   }
 }
- 

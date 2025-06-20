@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class SignupOtpScreen extends StatefulWidget {
@@ -14,10 +13,19 @@ class _SignupOtpScreenState extends State<SignupOtpScreen> {
   int _secondsRemaining = 60;
   late final _timer;
 
+  late String userType;
+
   @override
   void initState() {
     super.initState();
     _startTimer();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final args = ModalRoute.of(context)?.settings.arguments as Map?;
+    userType = (args != null && args['type'] == 'partner') ? 'partner' : 'user';
   }
 
   void _startTimer() {
@@ -35,7 +43,11 @@ class _SignupOtpScreenState extends State<SignupOtpScreen> {
   void _verifyOtp() {
     final code = _otpControllers.map((c) => c.text).join();
     if (code.length == 6) {
-      Navigator.pushNamed(context, '/signup_success');
+      Navigator.pushNamed(
+        context,
+        '/signup_success',
+        arguments: {'type': userType},
+      );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Veuillez entrer le code complet")),
@@ -44,7 +56,11 @@ class _SignupOtpScreenState extends State<SignupOtpScreen> {
   }
 
   void _switchToQr() {
-    Navigator.pushNamed(context, '/signup_qr_verification');
+    Navigator.pushNamed(
+      context,
+      '/signup_qr_verification',
+      arguments: {'type': userType},
+    );
   }
 
   @override
@@ -57,6 +73,7 @@ class _SignupOtpScreenState extends State<SignupOtpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isPartner = userType == 'partner';
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -66,8 +83,12 @@ class _SignupOtpScreenState extends State<SignupOtpScreen> {
               const SizedBox(height: 40),
               Image.asset('assets/icons/logo.png', height: 80),
               const SizedBox(height: 20),
-              const Text('Cas@Event | Verification Code OTP',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              Text(
+                isPartner
+                    ? 'Cas@Event | Partenaire - Vérification OTP'
+                    : 'Cas@Event | Verification Code OTP',
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
               const Divider(thickness: 2, color: Colors.red),
               const SizedBox(height: 20),
               const Text("Un mail vous a été envoyé sur manal******@ynov.com"),
