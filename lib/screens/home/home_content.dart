@@ -1,12 +1,18 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import '../../widgets/category_filter.dart';
 import 'package:geolocator/geolocator.dart';
-import 'popular_event_page.dart'; // <-- Assure-toi que ce fichier existe et correspond à ta page d'événements populaires
+import 'package:casablanca_activites/models/user_profile.dart';
+import '../../widgets/category_filter.dart';
+import 'popular_event_page.dart';
+
+// Si tu as besoin d'autres imports pour tes widgets personnalisés, ajoute-les ici
 
 class HomeContent extends StatefulWidget {
   final List<Map<String, dynamic>> events;
   final Function(int) toggleFavorite;
   final Function(Map<String, dynamic>) goToDetails;
+
+  // !! On enlève userProfile du constructeur, on récupère par ModalRoute
 
   const HomeContent({
     super.key,
@@ -44,13 +50,11 @@ class _HomeContentState extends State<HomeContent> {
     });
   }
 
-  // Filtrage pour Nouveautés (pas de filtre par catégorie)
   List<Map<String, dynamic>> get featuredEvents {
     final base = widget.events.take(6).toList();
     return _filterEvents(base);
   }
 
-  // Filtrage pour Populaires (avec filtre par catégorie)
   List<Map<String, dynamic>> get popularEvents {
     final base = widget.events.length > 6
         ? widget.events.sublist(6).cast<Map<String, dynamic>>()
@@ -163,9 +167,20 @@ class _HomeContentState extends State<HomeContent> {
 
   @override
   Widget build(BuildContext context) {
-    final String fullName = "john Mayouma";
-    final String location = "Casablanca, Morocco";
-    final String imageUrl = "assets/images/profile.jpg";
+    // ==== MODIFIE ICI: récupère userProfile transmis via ModalRoute ====
+    final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
+    final userProfile = args?['userProfile'] as UserProfile?;
+
+    // Sécurité: si userProfile pas transmis, message simple
+    if (userProfile == null) {
+      return const Scaffold(
+        body: Center(child: Text("Aucun profil utilisateur reçu.")),
+      );
+    }
+
+    final String fullName = "${userProfile.firstName} ${userProfile.lastName}";
+    final String location = userProfile.location;
+    final String imageUrl = userProfile.imageUrl;
 
     return SafeArea(
       child: Scaffold(
@@ -177,7 +192,14 @@ class _HomeContentState extends State<HomeContent> {
           titleSpacing: 20,
           title: Row(
             children: [
-              CircleAvatar(radius: 22, backgroundImage: AssetImage(imageUrl)),
+              CircleAvatar(
+                radius: 22,
+                backgroundImage: imageUrl.startsWith('http')
+                    ? NetworkImage(imageUrl)
+                    : (imageUrl.isNotEmpty && File(imageUrl).existsSync()
+                        ? FileImage(File(imageUrl))
+                        : const AssetImage('assets/default_avatar.png')) as ImageProvider,
+              ),
               const SizedBox(width: 12),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

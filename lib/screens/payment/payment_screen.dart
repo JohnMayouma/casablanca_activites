@@ -1,4 +1,6 @@
+import 'package:casablanca_activites/screens/payment/payment_otp_screen.dart';
 import 'package:flutter/material.dart';
+// Mets le bon chemin selon ton architecture
 
 // -------- Nouvelle page : PaypalReviewScreen --------
 
@@ -182,7 +184,7 @@ class PaypalReviewScreen extends StatelessWidget {
                 ),
               ),
 
-              // Payment method
+              // Payment method (PAYPAL UNIQUEMENT)
               Container(
                 margin: const EdgeInsets.only(top: 10, bottom: 18),
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 18),
@@ -193,16 +195,14 @@ class PaypalReviewScreen extends StatelessWidget {
                 child: Row(
                   children: [
                     Image.asset(
-                      paymentMethod == 'paypal'
-                          ? "assets/payments/paypal_logo.png"
-                          : "assets/payments/stripe_logo.png",
+                      "assets/payments/paypal_logo.png",
                       width: 30,
                       height: 30,
                     ),
                     const SizedBox(width: 12),
-                    Text(
-                      paymentMethod == 'paypal' ? "Paypal" : "Stripe",
-                      style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                    const Text(
+                      "Paypal",
+                      style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
                     ),
                     const Spacer(),
                     GestureDetector(
@@ -221,24 +221,27 @@ class PaypalReviewScreen extends StatelessWidget {
               ),
 
               // Continue Button
-              const SizedBox(height: 12),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Action pour continuer
-                    Navigator.of(context).popUntil((route) => route.isFirst);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 241, 79, 79),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    elevation: 0,
-                    textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  child: const Text("Continue"),
-                ),
-              ),
+             SizedBox(
+  width: double.infinity,
+  child: ElevatedButton(
+    onPressed: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => PaymentOtpScreen(email: email, sentOtp: '',),
+        ),
+      );
+    },
+    style: ElevatedButton.styleFrom(
+      backgroundColor: const Color.fromARGB(255, 241, 79, 79),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      elevation: 0,
+      textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+    ),
+    child: const Text("Continue"),
+  ),
+),
               const SizedBox(height: 25),
             ],
           ),
@@ -333,33 +336,30 @@ class _PaymentScreenState extends State<PaymentScreen> {
     double tax = total * 0.1;
     double totalWithTax = total + tax;
 
-    if (selectedMethod == 'paypal' || selectedMethod == 'stripe') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => PaypalReviewScreen(
-            eventTitle: title,
-            eventImage: eventImage,
-            eventDate: eventDate,
-            eventLocation: eventLocation,
-            fullName: userFullName,
-            phoneNumber: userPhone,
-            email: userMail,
-            seatType: seatType,
-            quantity: quantity,
-            pricePerSeat: pricePerSeat,
-            tax: tax,
-            total: totalWithTax,
-            paymentMethod: selectedMethod,
-            onChangePayment: () {
-              Navigator.pop(context);
-            },
-          ),
+    // UNIQUEMENT PAYPAL
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PaypalReviewScreen(
+          eventTitle: title,
+          eventImage: eventImage,
+          eventDate: eventDate,
+          eventLocation: eventLocation,
+          fullName: userFullName,
+          phoneNumber: userPhone,
+          email: userMail,
+          seatType: seatType,
+          quantity: quantity,
+          pricePerSeat: pricePerSeat,
+          tax: tax,
+          total: totalWithTax,
+          paymentMethod: selectedMethod,
+          onChangePayment: () {
+            Navigator.pop(context);
+          },
         ),
-      );
-    } else {
-      Navigator.pushNamed(context, '/confirmation');
-    }
+      ),
+    );
   }
 
   void goToAddCardScreen() async {
@@ -479,20 +479,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
               label: 'Paypal',
               asset: 'assets/payments/paypal_logo.png',
             ),
-            paymentOption(
-              value: 'stripe',
-              label: 'Stripe',
-              asset: 'assets/payments/stripe_logo.png',
-            ),
-
-            if (savedCards.isNotEmpty)
-              ...savedCards.map(
-                (card) => paymentOption(
-                  value: 'card',
-                  label: '**** **** **** ${card['number']?.substring(card['number']!.length - 4)}',
-                  asset: 'assets/payments/card_icon.png',
-                ),
-              ),
 
             Container(
               margin: const EdgeInsets.only(top: 8, bottom: 28),

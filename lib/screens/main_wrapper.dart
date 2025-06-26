@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show BottomNavigationBar, BottomNavigationBarItem, BottomNavigationBarType, BuildContext, Color, Colors, Icon, Icons, Navigator, Scaffold, State, StatefulWidget, Widget;
 import '../screens/home/home_content.dart';
 import '../screens/map/map_screen.dart';
 import '../screens/tickets/tickets_screen.dart';
@@ -92,13 +92,13 @@ class _MainWrapperState extends State<MainWrapper> {
       HomeContent(
         events: events,
         toggleFavorite: toggleFavorite,
-        goToDetails: (e) {
-          final index = events.indexOf(e);
+        goToDetails: (eventWithIndex) {
+          final index = eventWithIndex['index'] as int;
           Navigator.pushNamed(
             context,
             '/details',
             arguments: {
-              ...e,
+              ...eventWithIndex,
               'eventIndex': index,
               'updateComments': (List<Map<String, String>> newComments) {
                 updateEventComments(index, newComments);
@@ -133,4 +133,4 @@ class _MainWrapperState extends State<MainWrapper> {
       ),
     );
   }
-}
+} 

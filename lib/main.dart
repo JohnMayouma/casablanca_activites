@@ -25,6 +25,10 @@ import 'screens/profile/profile_edit_screen.dart';
 import 'screens/map/map_screen.dart';
 import 'screens/avis/avis_et_plan.dart';
 import 'screens/book_event_screen.dart';
+import 'screens/payment/payment_otp_screen.dart';
+
+
+
 
 void main() {
   runApp(const MyApp());
@@ -69,10 +73,17 @@ class MyApp extends StatelessWidget {
         '/confirmation': (context) => const ConfirmationScreen(),
         '/profile_edit': (context) => const ProfileEditScreen(),
         '/book_event': (context) => const BookEventScreen(),
+        '/paymentOtp': (context) {
+    // Pour passer des arguments à PaymentOtpScreen (par exemple l'email)
+    final args = ModalRoute.of(context)!.settings.arguments as Map?;
+    return PaymentOtpScreen(email: args?['email'] ?? '', sentOtp: args?['sentOtp'] ?? '');
+  },
 
         /// Autres modules
         '/map': (context) => const MapScreen(),
         '/avis': (context) => const AvisEtPlanScreen(),
+        
+
       },
     );
   }

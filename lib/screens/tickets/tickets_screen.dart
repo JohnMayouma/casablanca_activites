@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+enum TicketStatus { upcoming, completed, cancelled }
+
 class TicketsScreen extends StatefulWidget {
   const TicketsScreen({super.key});
 
@@ -7,35 +9,40 @@ class TicketsScreen extends StatefulWidget {
   State<TicketsScreen> createState() => _TicketsScreenState();
 }
 
-enum TicketStatus { upcoming, completed, cancelled }
-
 class _TicketsScreenState extends State<TicketsScreen> with TickerProviderStateMixin {
   late TabController _tabController;
 
-  // Exemple dynamique d'historique tickets (à remplacer par une liste issue API ou provider)
+  // Liste mockée pour l'exemple
   List<Map<String, dynamic>> allTickets = [
     {
-      "event": "National Music Festival",
+      "event": "Atelier d'écriture créative",
+      "organizer": "Maison des Arts",
       "date": "24 Juin 2025 – 21:00",
-      "location": "Grand Park, Casa",
+      "location": "Grand Parc, Casa",
       "type": "VIP",
       "quantity": 2,
       "price": "1000 MAD",
       "status": TicketStatus.upcoming,
       "img": "assets/images/rema.jpg",
+      "free": false,
+      "paid": true,
     },
     {
-      "event": "Art & Mural Workshop",
+      "event": "Atelier de peinture acrylique",
+      "organizer": "Centre d'Art",
       "date": "27 Déc. 2025 – 19:00",
-      "location": "Art House",
+      "location": "Art House, Casablanca",
       "type": "Standard",
       "quantity": 1,
       "price": "350 MAD",
       "status": TicketStatus.upcoming,
       "img": "assets/images/jazz.jpg",
+      "free": false,
+      "paid": true,
     },
     {
       "event": "Jazz Night Casablanca",
+      "organizer": "Jazz Club",
       "date": "20 Août 2024 – 19:30",
       "location": "Villa des Arts",
       "type": "Standard",
@@ -43,10 +50,11 @@ class _TicketsScreenState extends State<TicketsScreen> with TickerProviderStateM
       "price": "150 MAD",
       "status": TicketStatus.completed,
       "img": "assets/images/jazz.jpg",
-      "reviewed": false,
+      "paid": true,
     },
     {
-      "event": "Yoga Zen Session",
+      "event": "Session Yoga Zen",
+      "organizer": "Zen Rooftop",
       "date": "15 Mai 2025 – 18:00",
       "location": "Rooftop Zen",
       "type": "Standard",
@@ -54,6 +62,7 @@ class _TicketsScreenState extends State<TicketsScreen> with TickerProviderStateM
       "price": "100 MAD",
       "status": TicketStatus.cancelled,
       "img": "assets/images/cuisine.jpeg",
+      "paid": false,
       "cancelReason": "Annulé par l'utilisateur",
     },
   ];
@@ -68,18 +77,18 @@ class _TicketsScreenState extends State<TicketsScreen> with TickerProviderStateM
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text("Cancel Booking"),
+        title: const Text("Annuler la réservation"),
         content: const Text(
-          "Are you sure you want to cancel this event?\n\nOnly 80% of funds will be returned to your account according to our policy.",
+          "Êtes-vous sûr de vouloir annuler cette réservation ?\n\n80% des fonds seront recrédités sur votre compte selon notre politique.",
         ),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(ctx, false),
-              child: const Text("No, Don't Cancel")),
+              child: const Text("Non, garder")),
           ElevatedButton(
               onPressed: () => Navigator.pop(ctx, true),
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-              child: const Text("Yes, Cancel")),
+              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF4F38E9)),
+              child: const Text("Oui, annuler")),
         ],
       ),
     );
@@ -98,11 +107,11 @@ class _TicketsScreenState extends State<TicketsScreen> with TickerProviderStateM
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text("Leave a Review"),
+        title: const Text("Laisser un avis"),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text("How was your experience with this event?"),
+            const Text("Comment évalueriez-vous votre expérience ?"),
             const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -119,7 +128,7 @@ class _TicketsScreenState extends State<TicketsScreen> with TickerProviderStateM
             ),
             const SizedBox(height: 8),
             TextField(
-              decoration: const InputDecoration(hintText: "Write your review"),
+              decoration: const InputDecoration(hintText: "Votre avis..."),
               minLines: 2,
               maxLines: 4,
               onChanged: (val) => reviewText = val,
@@ -127,7 +136,7 @@ class _TicketsScreenState extends State<TicketsScreen> with TickerProviderStateM
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("Maybe Later")),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("Plus tard")),
           ElevatedButton(
             onPressed: () {
               setState(() {
@@ -135,7 +144,8 @@ class _TicketsScreenState extends State<TicketsScreen> with TickerProviderStateM
               });
               Navigator.pop(ctx);
             },
-            child: const Text("Submit"),
+            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF4F38E9)),
+            child: const Text("Envoyer"),
           ),
         ],
       ),
@@ -144,13 +154,13 @@ class _TicketsScreenState extends State<TicketsScreen> with TickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
-    final colorPrimary = const Color.fromARGB(255, 247, 76, 73); // Violet comme sur l'image
-    final colorInactive = Colors.grey[400];
+    final Color evanoBlue = const Color(0xFF4F38E9);
+    final Color orangeTicket = const Color(0xFFFF5B26);
 
     final tabs = [
-      Tab(child: Text("Upcoming", style: TextStyle(fontWeight: FontWeight.bold))),
-      Tab(child: Text("Completed", style: TextStyle(fontWeight: FontWeight.bold))),
-      Tab(child: Text("Cancelled", style: TextStyle(fontWeight: FontWeight.bold))),
+      Tab(child: Text("À venir", style: TextStyle(fontWeight: FontWeight.bold))),
+      Tab(child: Text("Terminés", style: TextStyle(fontWeight: FontWeight.bold))),
+      Tab(child: Text("Annulés", style: TextStyle(fontWeight: FontWeight.bold))),
     ];
 
     List<Map<String, dynamic>> ticketsFiltered(TicketStatus status) =>
@@ -159,66 +169,75 @@ class _TicketsScreenState extends State<TicketsScreen> with TickerProviderStateM
     Widget buildEmptyState() => Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset("assets/images/empty_tickets.png", width: 140, height: 140, fit: BoxFit.contain),
-            const SizedBox(height: 18),
+            Image.asset("assets/images/empty_tickets.png", width: 120, height: 120, fit: BoxFit.contain),
+            const SizedBox(height: 16),
             const Text(
-              "Empty Tickets",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+              "Aucun ticket",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             const Text(
-              "Looks like you don't have a ticket yet! Start searching for events now by clicking the button below.",
+              "Vous n'avez pas encore de réservation.\nCommencez par explorer les événements !",
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.black54),
             ),
-            const SizedBox(height: 22),
+            const SizedBox(height: 20),
             OutlinedButton(
               onPressed: () => Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false),
               style: OutlinedButton.styleFrom(
-                  foregroundColor: colorPrimary,
+                  foregroundColor: evanoBlue,
+                  side: BorderSide(color: evanoBlue),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
-              child: const Text("Find Events"),
+              child: const Text("Explorer les événements"),
             )
           ],
         );
 
-    return Scaffold(
+    return WillPopScope(
+  onWillPop: () async {
+    Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+    return false;
+  },
+  child: Scaffold(
+
+     
+     
+     
       appBar: AppBar(
-        title: const Text("Tickets"),
         backgroundColor: Colors.white,
-        elevation: 0.5,
+        elevation: 0,
+        title: const Text("Tickets", style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600)),
+        actions: [
+          IconButton(
+              icon: const Icon(Icons.search, color: Colors.black54),
+              onPressed: () {}),
+          IconButton(
+              icon: const Icon(Icons.more_vert, color: Colors.black54),
+              onPressed: () {}),
+        ],
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(48),
+          preferredSize: const Size.fromHeight(54),
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 12),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF2F2F5),
-              borderRadius: BorderRadius.circular(14),
-            ),
             child: TabBar(
               controller: _tabController,
-              labelColor: colorPrimary,
-              unselectedLabelColor: colorInactive,
+              labelColor: evanoBlue,
+              unselectedLabelColor: Colors.grey[400],
               labelStyle: const TextStyle(fontWeight: FontWeight.bold),
-              indicator: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(14),
-                boxShadow: [
-                  BoxShadow(
-                      color: colorPrimary.withOpacity(0.07),
-                      blurRadius: 8,
-                      spreadRadius: 1)
-                ],
+              indicator: UnderlineTabIndicator(
+                borderSide: BorderSide(color: evanoBlue, width: 3.5),
+                insets: const EdgeInsets.symmetric(horizontal: 24),
               ),
               tabs: tabs,
             ),
           ),
         ),
       ),
+      backgroundColor: const Color(0xFFF6F5FA),
       body: TabBarView(
         controller: _tabController,
         children: [
-          // UPCOMING
+          // À VENIR
           ticketsFiltered(TicketStatus.upcoming).isEmpty
               ? Center(child: buildEmptyState())
               : ListView.separated(
@@ -228,19 +247,26 @@ class _TicketsScreenState extends State<TicketsScreen> with TickerProviderStateM
                   itemBuilder: (ctx, idx) {
                     final tkt = ticketsFiltered(TicketStatus.upcoming)[idx];
                     final realIdx = allTickets.indexOf(tkt);
-                    return _TicketCard(
+                    return _TicketEvanoCard(
                       ticket: tkt,
-                      color: colorPrimary,
+                      color: evanoBlue,
+                      badge: const _StatusBadge(
+                        label: "Payé",
+                        color: Color(0xFF4F38E9),
+                        borderColor: Color(0xFF4F38E9),
+                        textColor: Color(0xFF4F38E9),
+                      ),
                       onCancel: () => _cancelTicket(realIdx),
                       onView: () {
                         // TODO: voir e-ticket
                       },
                       showCancel: true,
                       showView: true,
+                      viewTicketButtonColor: orangeTicket, // Orange pour "Voir le ticket" ici uniquement
                     );
                   },
                 ),
-          // COMPLETED
+          // TERMINÉS
           ticketsFiltered(TicketStatus.completed).isEmpty
               ? Center(child: buildEmptyState())
               : ListView.separated(
@@ -250,16 +276,23 @@ class _TicketsScreenState extends State<TicketsScreen> with TickerProviderStateM
                   itemBuilder: (ctx, idx) {
                     final tkt = ticketsFiltered(TicketStatus.completed)[idx];
                     final realIdx = allTickets.indexOf(tkt);
-                    return _TicketCard(
+                    return _TicketEvanoCard(
                       ticket: tkt,
-                      color: colorPrimary,
+                      color: evanoBlue,
+                      badge: const _StatusBadge(
+                        label: "Terminé",
+                        color: Color(0xFF1BC47D),
+                        borderColor: Color(0xFF1BC47D),
+                        textColor: Color(0xFF1BC47D),
+                      ),
                       showCancel: false,
                       showView: true,
                       onReview: tkt['reviewed'] == true ? null : () => _showReviewDialog(realIdx),
+                      viewTicketButtonColor: evanoBlue, // Bleu Evano pour les autres onglets
                     );
                   },
                 ),
-          // CANCELLED
+          // ANNULÉS
           ticketsFiltered(TicketStatus.cancelled).isEmpty
               ? Center(child: buildEmptyState())
               : ListView.separated(
@@ -268,127 +301,249 @@ class _TicketsScreenState extends State<TicketsScreen> with TickerProviderStateM
                   separatorBuilder: (_, __) => const SizedBox(height: 16),
                   itemBuilder: (ctx, idx) {
                     final tkt = ticketsFiltered(TicketStatus.cancelled)[idx];
-                    return _TicketCard(
+                    return _TicketEvanoCard(
                       ticket: tkt,
-                      color: Colors.red,
+                      color: evanoBlue,
+                      badge: const _StatusBadge(
+                        label: "Annulé",
+                        color: Color(0xFFF44336),
+                        borderColor: Color(0xFFF44336),
+                        textColor: Color(0xFFF44336),
+                      ),
                       showCancel: false,
                       showView: false,
+                      viewTicketButtonColor: evanoBlue,
                     );
                   },
                 ),
+        ],
+      ),
+    ),
+    );
+  }
+}
+
+class _TicketEvanoCard extends StatelessWidget {
+  final Map<String, dynamic> ticket;
+  final Color color;
+  final Widget? badge;
+  final VoidCallback? onCancel;
+  final VoidCallback? onView;
+  final VoidCallback? onReview;
+  final bool showCancel;
+  final bool showView;
+  final Color? viewTicketButtonColor;
+
+  const _TicketEvanoCard({
+    required this.ticket,
+    required this.color,
+    this.badge,
+    this.onCancel,
+    this.onView,
+    this.onReview,
+    this.showCancel = false,
+    this.showView = false,
+    this.viewTicketButtonColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isFree = ticket['free'] == true;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(19),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF3E4A5940).withOpacity(0.10),
+            blurRadius: 14,
+            offset: const Offset(0, 6),
+          )
+        ],
+      ),
+      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 15),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Ligne du haut : image + titre + badge
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.asset(
+                  ticket['img'] ?? "assets/images/rema.jpg",
+                  width: 62,
+                  height: 62,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            ticket['event'] ?? "",
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: Colors.black87),
+                          ),
+                        ),
+                        if (isFree)
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                            margin: const EdgeInsets.only(left: 8),
+                            decoration: BoxDecoration(
+                              color: color.withOpacity(0.13),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              "GRATUIT",
+                              style: TextStyle(
+                                  color: color,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 0.5),
+                            ),
+                          ),
+                        if (badge != null) ...[
+                          const SizedBox(width: 8),
+                          badge!,
+                        ]
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    Text(ticket['organizer'] ?? "",
+                        style: const TextStyle(fontSize: 13, color: Colors.black54)),
+                    if (ticket['date'] != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 1.5),
+                        child: Text(
+                          ticket['date'],
+                          style: TextStyle(
+                              color: color,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 9),
+          // Infoline location + type + badge
+          Row(
+            children: [
+              const Icon(Icons.place, color: Colors.grey, size: 16),
+              const SizedBox(width: 3),
+              Expanded(
+                child: Text(ticket['location'] ?? "",
+                    style: const TextStyle(fontSize: 13, color: Colors.black54)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 3),
+          Row(
+            children: [
+              Text(
+                "${ticket['type']} x${ticket['quantity']}",
+                style: const TextStyle(color: Colors.black87, fontSize: 13),
+              ),
+              const SizedBox(width: 7),
+              Text(
+                ticket['price'] ?? "",
+                style: TextStyle(
+                    color: color, fontWeight: FontWeight.bold, fontSize: 15),
+              ),
+            ],
+          ),
+          // Boutons action
+          const SizedBox(height: 11),
+          Row(
+            children: [
+              if (showCancel)
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: onCancel,
+                    style: OutlinedButton.styleFrom(
+                        foregroundColor: color,
+                        side: BorderSide(color: color),
+                        minimumSize: const Size(0, 42),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10))),
+                    child: const Text("Annuler la réservation"),
+                  ),
+                ),
+              if (showCancel && showView)
+                const SizedBox(width: 12),
+              if (showView)
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: onView,
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: viewTicketButtonColor ?? color,
+                        minimumSize: const Size(0, 42),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10))),
+                    child: const Text("Voir le ticket"),
+                  ),
+                ),
+              if (onReview != null)
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: onReview,
+                    style: OutlinedButton.styleFrom(
+                        foregroundColor: color,
+                        side: BorderSide(color: color),
+                        minimumSize: const Size(0, 42),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10))),
+                    child: const Text("Laisser un avis"),
+                  ),
+                ),
+            ],
+          ),
         ],
       ),
     );
   }
 }
 
-class _TicketCard extends StatelessWidget {
-  final Map<String, dynamic> ticket;
+class _StatusBadge extends StatelessWidget {
+  final String label;
   final Color color;
-  final VoidCallback? onCancel;
-  final VoidCallback? onView;
-  final VoidCallback? onReview;
-  final bool showCancel;
-  final bool showView;
+  final Color borderColor;
+  final Color textColor;
 
-  const _TicketCard({
-    required this.ticket,
+  const _StatusBadge({
+    required this.label,
     required this.color,
-    this.onCancel,
-    this.onView,
-    this.onReview,
-    this.showCancel = false,
-    this.showView = false,
+    required this.borderColor,
+    required this.textColor,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: Colors.white,
-      elevation: 2,
-      margin: EdgeInsets.zero,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-        child: Row(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(13),
-              child: Image.asset(ticket['img'] ?? "assets/images/rema.jpg", width: 60, height: 60, fit: BoxFit.cover),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(ticket['event'] ?? "", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                  const SizedBox(height: 3),
-                  Text(ticket['date'] ?? "", style: const TextStyle(fontSize: 13, color: Colors.black54)),
-                  Text(ticket['location'] ?? "", style: const TextStyle(fontSize: 13, color: Colors.black54)),
-                  Row(
-                    children: [
-                      Text(
-                        "${ticket['type']} x${ticket['quantity']}",
-                        style: const TextStyle(fontSize: 13, color: Colors.black87),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        ticket['price'] ?? "",
-                        style: const TextStyle(fontSize: 13, color: Color(0xFF5735FF), fontWeight: FontWeight.w600),
-                      ),
-                    ],
-                  ),
-                  if (ticket['cancelReason'] != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4),
-                      child: Text(
-                        ticket['cancelReason'],
-                        style: const TextStyle(color: Colors.red, fontSize: 12),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 7),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (showCancel)
-                  OutlinedButton(
-                    onPressed: onCancel,
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color.fromARGB(255, 36, 102, 215),
-                      side: const BorderSide(color: Color.fromARGB(255, 67, 105, 242)),
-                      minimumSize: const Size(90, 38),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9)),
-                    ),
-                    child: const Text("Annuler Réservation"),
-                  ),
-                if (showView)
-                  OutlinedButton(
-                    onPressed: onView,
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: color,
-                      side: BorderSide(color: color),
-                      minimumSize: const Size(90, 38),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9)),
-                    ),
-                    child: const Text("Voir Le Ticket"),
-                  ),
-                if (onReview != null)
-                  OutlinedButton(
-                    onPressed: onReview,
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color.fromARGB(255, 218, 38, 38),
-                      side: const BorderSide(color: Color.fromARGB(255, 216, 35, 35)),
-                      minimumSize: const Size(90, 38),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9)),
-                    ),
-                    child: const Text("Laisser un avis"),
-                  ),
-              ],
-            ),
-          ],
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.09),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: borderColor, width: 1.2),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontWeight: FontWeight.w600,
+          color: textColor,
+          fontSize: 12.5,
         ),
       ),
     );

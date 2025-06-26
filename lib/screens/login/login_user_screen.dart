@@ -1,4 +1,7 @@
- import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+import 'dart:io';
+import '../main_wrapper.dart' show MainWrapper;
+import '/onboarding/onboarding_flow.dart';
 
 class LoginUserScreen extends StatefulWidget {
   const LoginUserScreen({super.key});
@@ -20,7 +23,7 @@ class _LoginUserScreenState extends State<LoginUserScreen> {
   }
 
   void _checkIfUserIsLoggedIn() async {
-    bool userLoggedIn = false; // à remplacer par votre logique
+    bool userLoggedIn = false; // à remplacer par ta logique réelle
     if (userLoggedIn) {
       Navigator.pushReplacementNamed(context, '/home');
     }
@@ -28,8 +31,21 @@ class _LoginUserScreenState extends State<LoginUserScreen> {
 
   void _login() async {
     if (_emailController.text.isNotEmpty && _passwordController.text.isNotEmpty) {
-      Navigator.pushReplacementNamed(context, '/home');
+      bool profileIsComplete = false; // à remplacer par ta logique réelle
+
+      if (!profileIsComplete) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const OnboardingFlow(), // <-- SANS callback !
+          ),
+        );
+      } else {
+        if (!mounted) return;
+        Navigator.pushReplacementNamed(context, '/home');
+      }
     } else {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Veuillez remplir tous les champs")),
       );
@@ -84,7 +100,6 @@ class _LoginUserScreenState extends State<LoginUserScreen> {
                   helperText: "Le mot de passe doit contenir au moins 8 caractères",
                 ),
               ),
-              // SECTION MOT DE PASSE OUBLIÉ ICI
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
@@ -97,7 +112,6 @@ class _LoginUserScreenState extends State<LoginUserScreen> {
                   ),
                 ),
               ),
-              // FIN SECTION MOT DE PASSE OUBLIÉ
               const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
@@ -150,8 +164,10 @@ class _LoginUserScreenState extends State<LoginUserScreen> {
               Center(
                 child: GestureDetector(
                   onTap: () => Navigator.pushNamed(context, '/signup'),
-                  child: const Text("Vous n'avez pas de compte ? Inscrivez-vous ici",
-                      style: TextStyle(color: Colors.blue)),
+                  child: const Text(
+                    "Vous n'avez pas de compte ? Inscrivez-vous ici",
+                    style: TextStyle(color: Colors.blue),
+                  ),
                 ),
               ),
             ],
@@ -160,4 +176,4 @@ class _LoginUserScreenState extends State<LoginUserScreen> {
       ),
     );
   }
-}     
+}

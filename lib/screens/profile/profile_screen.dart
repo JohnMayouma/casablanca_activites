@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../widgets/bottom_nav.dart';
+// N'oublie pas d'importer ta page de paiement
+import '../payment/payment_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -7,35 +8,12 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Exemple de nom récupéré dynamiquement depuis l’inscription
-    final String fullName = "Mehrab Bozorgi";
+    final String fullName = "John MAYOUMA";
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
-      appBar: AppBar(
-  backgroundColor: Colors.white,
-  elevation: 0,
-  leading: IconButton(
-    icon: const Icon(Icons.arrow_back, color: Colors.black),
-    onPressed: () {
-      Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
-    },
-  ),
-  centerTitle: true,
-  title: Row(
-    mainAxisAlignment: MainAxisAlignment.center,
-    mainAxisSize: MainAxisSize.min,
-    children: const [
-      Icon(Icons.person, color: Color.fromARGB(255, 249, 74, 74)),
-      SizedBox(width: 6),
-      Text("Profile", style: TextStyle(color: Colors.black)),
-    ],
-  ),
-),
+      // La barre du bas a été retirée ici
 
-      bottomNavigationBar: const BottomNavBar(
-        currentIndex: 4,
-        likedEvents: [],
-      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -80,7 +58,17 @@ class ProfileScreen extends StatelessWidget {
             ),
             _buildTile(context, Icons.notifications_none, "Notification", onTap: () {}),
             _buildTile(context, Icons.lock_outline, "Sécurité", onTap: () {}),
-            _buildTile(context, Icons.payment, "Paiement", onTap: () {}),
+            _buildTile(
+              context,
+              Icons.payment,
+              "Paiement",
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const PaymentScreen()),
+                );
+              },
+            ),
             _buildTile(context, Icons.color_lens_outlined, "Apparence", onTap: () {}),
             _buildTile(context, Icons.help_outline, "Aide", onTap: () {}),
           ],
