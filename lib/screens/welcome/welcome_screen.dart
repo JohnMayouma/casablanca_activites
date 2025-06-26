@@ -76,7 +76,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 12),
-                Image.asset('assets/icons/qrcode.png', height: 110),
+                
                 const SizedBox(height: 90), // espacement entre le QR code et le bouton
               ],
             ),
