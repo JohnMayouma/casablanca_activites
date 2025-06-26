@@ -158,9 +158,8 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
           automaticallyImplyLeading: false,
           title: Row(
             children: [
-              // Remplace le cœur par ton logo :
               Image.asset(
-                "assets/icons/logo.png", // Mets le chemin de ton logo ici !
+                "assets/icons/logo.png",
                 width: 31,
                 height: 31,
               ),
@@ -215,13 +214,12 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                     selectedColor: Colors.orange.shade100,
                     onSelected: (_) => filterEvents('Activités'),
                   ),
-                  
                   const SizedBox(width: 8),
                   ChoiceChip(
                     label: const Text('Evenements'),
                     selected: selectedCategory == 'Evenements',
                     selectedColor: Colors.orange.shade100,
-                    onSelected: (_) => filterEvents('Evenementsc'),
+                    onSelected: (_) => filterEvents('Evenements'), // corrigé ici
                   ),
                   const SizedBox(width: 8),
                   ChoiceChip(
