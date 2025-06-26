@@ -12,6 +12,7 @@ import 'screens/auth/signup/signup_otp.dart';
 import 'screens/auth/signup/signup_qr_verification.dart';
 import 'screens/auth/signup/signup_success.dart';
 import 'screens/login/ForgotPasswordScreen.dart';
+import 'screens/login/forgot_password_partner_screen.dart';
 
 /// --- WRAPPER POUR LA NAVIGATION PRINCIPALE ---
 import 'screens/main_wrapper.dart';
@@ -62,6 +63,8 @@ class MyApp extends StatelessWidget {
         '/signup_qr_verification': (context) => const SignupQrVerificationScreen(),
         '/signup_success': (context) => const SignupSuccessScreen(),
         '/forgot_password': (context) => const ForgotPasswordScreen(),
+        '/forgot_password_partner': (context) => const ForgotPasswordPartnerScreen(),
+
 
         /// Accès principal avec navbar persistante
         '/home': (context) => const MainWrapper(),

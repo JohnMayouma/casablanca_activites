@@ -90,6 +90,7 @@ class _LoginPartnerScreenState extends State<LoginPartnerScreen> {
                 child: TextButton(
                   onPressed: () {
                     Navigator.pushNamed(context, '/forgot_password_partner');
+
                   },
                   child: const Text(
                     'Mot de passe oublié ?',
