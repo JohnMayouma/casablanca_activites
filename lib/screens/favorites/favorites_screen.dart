@@ -68,7 +68,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Text(filteredEvents[index]['title']),
+                  child: Text(filteredEvents[index]['title'], overflow: TextOverflow.ellipsis),
                 ),
               ],
             ),
@@ -123,6 +123,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
           ],
         ),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
@@ -133,10 +134,25 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(event['title'], style: const TextStyle(fontWeight: FontWeight.bold)),
+                  Text(
+                    event['title'],
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   const SizedBox(height: 4),
-                  Text(event['date'], style: const TextStyle(color: Colors.grey)),
-                  Text(event['location'] ?? 'Casablanca', style: TextStyle(color: Colors.grey.shade600)),
+                  Text(
+                    event['date'],
+                    style: const TextStyle(color: Colors.grey),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(
+                    event['location'] ?? 'Casablanca',
+                    style: TextStyle(color: Colors.grey.shade600),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ],
               ),
             ),
@@ -158,31 +174,17 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
           automaticallyImplyLeading: false,
           title: Row(
             children: [
-              Image.asset(
-                "assets/icons/logo.png",
-                width: 31,
-                height: 31,
-              ),
+              Image.asset("assets/icons/logo.png", width: 31, height: 31),
               const SizedBox(width: 8),
               const Text(
                 'Favoris',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(color: Colors.black, fontSize: 22, fontWeight: FontWeight.bold),
               ),
             ],
           ),
           actions: [
-            IconButton(
-              icon: const Icon(Icons.search, color: Colors.grey),
-              onPressed: () {},
-            ),
-            IconButton(
-              icon: const Icon(Icons.tune, color: Colors.grey),
-              onPressed: () {},
-            ),
+            IconButton(icon: const Icon(Icons.search, color: Colors.grey), onPressed: () {}),
+            IconButton(icon: const Icon(Icons.tune, color: Colors.grey), onPressed: () {}),
             IconButton(
               icon: Icon(isGrid ? Icons.view_list : Icons.grid_view, color: Colors.grey),
               onPressed: () => setState(() => isGrid = !isGrid),
@@ -219,7 +221,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                     label: const Text('Evenements'),
                     selected: selectedCategory == 'Evenements',
                     selectedColor: Colors.orange.shade100,
-                    onSelected: (_) => filterEvents('Evenements'), // corrigé ici
+                    onSelected: (_) => filterEvents('Evenements'),
                   ),
                   const SizedBox(width: 8),
                   ChoiceChip(
